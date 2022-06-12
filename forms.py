@@ -39,3 +39,8 @@ class PostForm(FlaskForm):
     keyword = StringField('keyword', validators=[DataRequired()])
     content = StringField('content', validators=[DataRequired()])
     price = IntegerField('price', validators=[DataRequired()])
+
+class EditForm(FlaskForm):
+    keyword = StringField('keyword', validators=[DataRequired()])
+    content = StringField('content', validators=[DataRequired()])
+    price = IntegerField('price', validators=[DataRequired()])

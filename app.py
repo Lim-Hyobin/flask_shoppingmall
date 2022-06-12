@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, redirect, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from models import db
+
 from models import User, Post
 # from flask_login import LoginManager, current_user, login_user, UserMixin
 
@@ -15,22 +15,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask import session
 from flask_wtf.csrf import CSRFProtect
-from forms import RegisterForm, LoginForm, PostForm, EmptyForm
-
+from forms import RegisterForm, LoginForm, PostForm, EditForm
+from models import db
 app = Flask(__name__)
-db.init_app(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoppingmall.sqlite3'
 app.config['SECRET_KEY'] = "software engineering"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = './static/img'
+app.config['UPLOAD_FOLDER'] = '/Users/limhyobin/Workspace/flask_shoppingmall/static/img/'
+
+
+
+db.init_app(app)
+db.app=app
 
 # login_manager = LoginManager(app)
 # login_manager.login_view = 'auth.login'
 
 # login_manager.init_app(app)
-csrf = CSRFProtect()
-csrf.init_app(app)
+# csrf = CSRFProtect()
+# csrf.init_app(app)
 
 
 @app.route('/')
@@ -176,8 +180,11 @@ def upload_product():
 
         f = request.files['image']
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+        print(f.filename)
+        imagepath = app.config['UPLOAD_FOLDER'] + f.filename
+        print(imagepath)
 
-        posttable = Post(keyword=keyword, content=content, price=price, status="판매중", author=author, image=f.filename)
+        posttable = Post(keyword=keyword, content=content, price=price, status="판매중", author=author, image=imagepath)
         # 이미지 파일명을 db에 저장, 이미지는 로컬에 저장, 이미지 경로는 config 선언
     
         db.session.add(posttable)
@@ -192,6 +199,33 @@ def product_detail(id):
     post = Post.query.filter_by(id = id).first()
     print(post)
     return render_template('product_detail.html', title='detail', post=post)
+
+
+@app.route('/edit_product/<id>', methods = ['GET', 'POST'])
+def edit_product(id):
+    update_product = Post.query.filter_by(id = id).first()
+    form = EditForm()
+   
+    # print(form.keyword, form.content, form.price)
+    print(form.data.get('keyword'), form.data.get('content'), form.data.get('price'))
+    
+    print(form.validate_on_submit())
+    print(form.errors)
+    if form.validate_on_submit():
+    # if not form.data.get('keyword')is not "None" or not form.data.get('content') or not form.data.get('price'):
+        # print("if 문 들어옴")
+        update_product.keyword = form.data.get('keyword')
+        update_product.content = form.data.get('content')
+        update_product.price = form.data.get('price')
+        db.session.commit()
+
+        return redirect(url_for('product_detail', id = update_product.id))
+
+    form.keyword.data = update_product.keyword
+    form.content.data = update_product.content
+    form.price.data = update_product.price
+    # print(form.price.data)
+    return render_template('edit_product.html', title='edit', post=update_product,form=form)
 
 # @app.route('/follow/<username>', methods=['POST'])
 # def follow(username):

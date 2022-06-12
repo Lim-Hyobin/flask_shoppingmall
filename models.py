@@ -44,14 +44,14 @@ class Post(db.Model):
     keyword = db.Column(db.String(120))
     content = db.Column(db.Text)
     price = db.Column(db.Integer)
-    # status = db.Column(db.String(10)) # 판매 or 품절
-    # image = db.Column(db.String(100))
+    status = db.Column(db.String(10)) # 판매 or 품절
+    image = db.Column(db.String(100))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
  
     def __repr__(self):
-        # return f"<Post('{self.keyword}', '{self.content}', '{self.price}', '{self.status})>"
-        return f"<Post('{self.keyword}', '{self.content}', '{self.price}')>"
+        return f"<Post('{self.keyword}', '{self.content}', '{self.price}', '{self.status}', '{self.image}')>"
+        # return f"<Post('{self.keyword}', '{self.content}', '{self.price}')>"
 
     # def __init__(self, keyword, content, price):
     #     self.keyword = keyword
