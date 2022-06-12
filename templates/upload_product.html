@@ -4,10 +4,11 @@
 <div class = "container">
     <form action = "{{url_for('upload_product')}}" method = "POST" enctype = "multipart/form-data">
         {{form.csrf_token}}
-        <input type = "text" name = "keyword"/>
-        <input type = "text" name = "content"/>
-        <input type = "text" name = "price"/>
-        <input type = "file" name = "image"/>
+        <br>
+        <label>상품 분류 키워드</label><input type = "text" name = "keyword"/>
+        <label>상품명</label><input type = "text" name = "content"/>
+        <label>가격</label><input type = "text" name = "price"/>
+        <!-- <input type = "file" name = "image"/> -->
         <input type = "submit"/>
     </form>
 </div>

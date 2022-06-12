@@ -15,7 +15,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
- 
+    followee = []
+
     posts = db.relationship('Post', backref='author', lazy=True)# 이후 사용자를 user라는 변수에 저장하면, user.posts를 통해 사용자의 product(post)에 접근가능
     # db.relationship(객체이름, post.author를 통해 product owner에게 접근 가능)  
  
@@ -34,7 +35,9 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password) # 암호화된 해시와 문자열을 비교해서 문자열이 동일한 해시를 갖는 경우 참을 반환
-
+    
+    def follow(self, username):
+        self.followee.append(username)
  
 
 class Post(db.Model):

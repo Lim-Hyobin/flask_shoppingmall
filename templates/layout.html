@@ -56,10 +56,17 @@
 
     <div class=form-group>
       {%if userid%}
-      {{userid}}<a>님 안녕하세요!</a><br>
-      <a href="/logout">로그아웃</a>
+      <center><h3>{{userid}}<a>님 안녕하세요!</a><br></h3>
+      <h4><a href="/upload_product">상품 업로드</a></h4>
+      <h4><a href="/logout">로그아웃</a></h4></center>
       {%endif%}
     </div>
+
+    
+    <form class="form-inline my-2 my-lg-0" method="POST">
+      <input class="form-control mr-sm-2" type="search" name="search" placeholder="키워드 입력" aria-label="Search">
+      <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="검색" />
+    </form>
  
     <main role="main">
     <!-- Main content block -->

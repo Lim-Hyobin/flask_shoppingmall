@@ -22,7 +22,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoppingmall.sqlite3'
 app.config['SECRET_KEY'] = "software engineering"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = '/Users/limhyobin/Workspace/flask_shoppingmall/static/img/'
+# app.config['UPLOAD_FOLDER'] = '/Users/limhyobin/Workspace/flask_shoppingmall/static/img/'
 
 
 
@@ -73,7 +73,7 @@ def mypage():
     author = User.query.filter_by(userid=userid).first()
     posts = Post.query.filter_by(user_id = author.id)
 
-    return render_template('mypage.html', title = 'mypage', userid=userid, posts=posts)
+    return render_template('mypage.html', title = 'mypage', userid=userid, posts=posts, author=author)
 
 
 @app.route('/registration', methods = ['GET', 'POST'])
@@ -92,7 +92,7 @@ def registration():
         db.session.add(usertable)
         db.session.commit()
 
-        return "회원가입 완료"
+        return redirect('/login')
 
     return render_template('registration.html', form=form)
     # if request.method == 'GET':
@@ -178,19 +178,19 @@ def upload_product():
         # print(author.username)
         # print(type(author))
 
-        f = request.files['image']
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-        print(f.filename)
-        imagepath = app.config['UPLOAD_FOLDER'] + f.filename
-        print(imagepath)
+        # f = request.files['image']
+        # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+        # print(f.filename)
+        # imagepath = app.config['UPLOAD_FOLDER'] + f.filename
+        # print(imagepath)
 
-        posttable = Post(keyword=keyword, content=content, price=price, status="판매중", author=author, image=imagepath)
+        posttable = Post(keyword=keyword, content=content, price=price, author=author)
         # 이미지 파일명을 db에 저장, 이미지는 로컬에 저장, 이미지 경로는 config 선언
     
         db.session.add(posttable)
         db.session.commit()
 
-        return '상품이 업로드 되었습니다.'
+        return redirect('/mainpage')
     
     return render_template('upload_product.html', title='upload', form=form)
 
@@ -227,23 +227,16 @@ def edit_product(id):
     # print(form.price.data)
     return render_template('edit_product.html', title='edit', post=update_product,form=form)
 
-# @app.route('/follow/<username>', methods=['POST'])
-# def follow(username):
-#     form = EmptyForm()
-#     if form.validate_on_submit():
-#         user = User.query.filter_by(username=username).first()
-#         if user is None:
-#             flash('User {} not found.'.format(username))
-#             return redirect(url_for('mainpage'))
-#         if user == current_user:
-#             flash('You cannot follow yourself!')
-#             return redirect(url_for('user', username=username))
-#         current_user.follow(user)
-#         db.session.commit()
-#         flash('You are following {}!'.format(username))
-#         return redirect(url_for('mypage', username=username))
-#     else:
-#         return redirect(url_for('mainpage'))
+@app.route('/follow/<id>', methods=['GET','POST'])
+def follow(id):
+    userid = session['userid']
+    author = User.query.filter_by(userid=userid).first()
+    # user = User.query.filter_by(id=id).first()
+    author.follow(id)
+    db.session.commit()
+    flash('You are following {}!'.format(id))
+    return redirect(url_for('mypage'))
+
 
 
 # @app.route('/unfollow/<username>', methods=['POST'])
